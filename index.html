@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NucleoDrop - Jogo de Nucleotídeos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Campo de Pontuação e Vidas -->
+    <div class="status-bar">
+        <div class="score-board">
+            Pontuação: <span id="score">0</span>
+        </div>
+        <div class="lives">
+            <img src="dna.png" alt="Vida 1" class="life" id="life-1">
+            <img src="dna.png" alt="Vida 2" class="life" id="life-2">
+            <img src="dna.png" alt="Vida 3" class="life" id="life-3">
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Coluna de Nucleotídeos (Imagens Moleculares em SVG) -->
+        <div class="nucleotides-column">
+            <!-- Imagens SVG das estruturas moleculares -->
+            <img src="adenine.svg" alt="Adenina" class="nucleotide" draggable="true" id="adenine">
+            <img src="thymine.svg" alt="Timina" class="nucleotide" draggable="true" id="thymine">
+            <img src="cytosine.svg" alt="Citosina" class="nucleotide" draggable="true" id="cytosine">
+            <img src="guanine.svg" alt="Guanina" class="nucleotide" draggable="true" id="guanine">
+        </div>
+
+        <!-- Área Central com os Slots de Soltura e Letras Abaixo -->
+        <div class="drop-area" id="drop-area">
+            <!-- Slots de soltura e letras correspondentes gerados dinamicamente -->
+        </div>
+
+        <!-- Sequência de Letras a ser Montada -->
+        <div class="word-area">
+            <div id="target-word" class="word"></div>
+        </div>
+    </div>
+
+    <!-- Área de feedback visual e sonoro -->
+    <div id="feedback" class="feedback"></div>
+    <audio id="success-sound" src="success.mp3"></audio>
+    <audio id="error-sound" src="error.mp3"></audio>
+
+    <!-- Tela de Fim de Jogo -->
+    <div id="game-over" class="game-over" style="display: none;">
+        <h2>Game Over</h2>
+        <p id="final-score"></p>
+        <button id="restart-btn">Reiniciar Jogo</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

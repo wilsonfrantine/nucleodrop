@@ -1,0 +1,218 @@
+/* style.css */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-size: contain;
+    background-position: center;
+    background-image: url('logo.webp');
+    background-repeat: no-repeat;
+    background-color: #ffffff;
+}
+
+.game-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2em;
+    color: #fff;
+    text-shadow: 2px 2px 5px #000;
+}
+
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    max-width: 800px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+}
+
+.score-board {
+    font-size: 1.5em;
+    color: #333;
+}
+
+.lives {
+    display: flex;
+    gap: 10px;
+}
+
+.life {
+    width: 40px;
+    height: 40px;
+    opacity: 1;  /* Totalmente visível */
+    transition: opacity 0.5s ease;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 800px;
+    margin-top: 20px;
+}
+
+.nucleotides-column {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px;
+    /* background-color: #fff; */
+    /* border: 2px solid #ccc; */
+    border-radius: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.nucleotide {
+    width: 60px;
+    height: 60px;
+    cursor: grab;  /* Cursor estilo drag-drop */
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+.drop-area {
+    flex: 1;
+    margin-top: 20px;
+    /* background-color: #fff; */
+    /* border: 2px dashed #ccc; */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    border-radius: 8px;
+    padding: 20px;
+    width: 100%;
+}
+.word-area{
+    display: none;
+}
+
+.slot {
+    width: 60px;
+    height: 60px;
+    margin: 5px;
+    border: 2px dashed #999;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border-radius: 4px;
+    background-color: rgb(255,255,255,0.6);
+    transition: border-color 0.3s ease, transform 0.2s ease; /* Animação suave */
+}
+
+.slot.correct {
+    border-color: green;
+    animation: correctPulse 0.5s;
+}
+
+.slot.incorrect {
+    border-color: red;
+    animation: incorrectShake 0.5s;
+}
+
+.letter {
+    text-align: center;
+    font-size: 1.5em;
+    margin-top: 5px;
+}
+
+.letter-hint {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #000000;  /* Cinza claro para impressão de transparência */
+    pointer-events: none;  /* Para não interferir com o drag-drop */
+}
+
+.feedback {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 15px 30px;
+    border-radius: 8px;
+    display: none;
+    text-align: center;
+    color: #fff;
+    font-size: 1.5em;
+    background-color: #333;
+    z-index: 1000;
+}
+
+#score {
+    color: #000;
+    transition: color 0.3s ease; /* Animação de mudança de cor */
+}
+
+.game-over {
+    position: fixed;
+    /* top: 50%; */
+    /* left: 50%; */
+    /* transform: translate(-50%, -50%); */
+    background-color: rgb(0 0 0 / 57%);
+    padding: 10%;
+    /* border-radius: 10px; */
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+    display: none;
+    width: 90%;
+    height: 90%;
+}
+
+p#final-score {
+    font-weight: bold;
+    color: white;
+}
+
+.game-over h2 {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #efe8e8;
+    margin-top: 20%;
+}
+
+#restart-btn {
+    /* margin-top: 15%; */
+    padding: 2% 2%;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 10px;
+    /* background-color: rgb(255,255,255,0.5); */
+}
+
+@keyframes correctPulse {
+    0%, 100% { border-color: green; }
+    50% { border-color: lightgreen; }
+}
+
+@keyframes incorrectShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+@media (max-width: 600px) {
+    .status-bar {
+        flex-direction: column;
+        align-items: center;
+    }
+    .nucleotides-column, .drop-area {
+        width: 100%;
+    }
+    .game-title {
+        font-size: 1.5em;
+    }
+}
