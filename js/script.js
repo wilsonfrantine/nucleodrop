@@ -1,7 +1,7 @@
 // script.js
 
 window.onload = function() {
-    const words = ["GATA", "CACA", "TATA", "TACA", "ATACA", "TACA GATO", "TACA CACA"];
+    const words = ["GATA", "CACA", "TATA", "TACA", "ATACA", "TACATACA","GATA", "TACACACA"];
     const nucleotideMapping = {
         A: 'adenine',
         T: 'thymine',
@@ -82,14 +82,14 @@ window.onload = function() {
 
         if (nucleotide === expectedNucleotide) {
             const img = document.createElement('img');
-            img.src = `${nucleotide}.svg`;
+            img.src = `./img/${nucleotide}.svg`; // Atualize o caminho dos SVGs
             img.classList.add('nucleotide');
             event.target.appendChild(img);
             event.target.removeEventListener('drop', handleDrop);
             event.target.classList.add('correct');
 
             // Tocar o som de sucesso
-            successSound.play();
+            playAudio(successSound);
 
             // Remover a letra de dica (cinza claro)
             const letterHint = event.target.querySelector('.letter-hint');
@@ -104,6 +104,12 @@ window.onload = function() {
             loseLife();  // Perder uma vida
             showFeedback('Errou! -1 Vida', 'red', errorSound);
         }
+    }
+
+    // Função para reproduzir áudio
+    function playAudio(audioElement) {
+        audioElement.currentTime = 0;  // Reinicia o áudio do início
+        audioElement.play();
     }
 
     // Perder uma vida
@@ -154,7 +160,7 @@ window.onload = function() {
         feedbackElement.textContent = message;
         feedbackElement.style.backgroundColor = color;
         feedbackElement.style.display = 'block';
-        sound.play();
+        playAudio(sound);  // Reproduz o áudio de erro
         setTimeout(() => {
             feedbackElement.style.display = 'none';
         }, 1000);

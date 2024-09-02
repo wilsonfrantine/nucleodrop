@@ -9,9 +9,28 @@ body {
     margin: 0;
     background-size: contain;
     background-position: center;
-    background-image: url('logo.webp');
+    background-image: url('../img/logo.webp'); /* Caminho atualizado */
     background-repeat: no-repeat;
-    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.3); /* Definição inicial com 50% de opacidade */
+    animation: colorChange 45s infinite alternate; /* Animação aplicada ao background */
+}
+
+@keyframes colorChange {
+    0% {
+        background-color: rgba(255, 0, 0, 0.5); /* Vermelho com 50% de opacidade */
+    }
+    25% {
+        background-color: rgba(0, 255, 0, 0.5); /* Verde com 50% de opacidade */
+    }
+    50% {
+        background-color: rgba(0, 0, 255, 0.5); /* Azul com 50% de opacidade */
+    }
+    75% {
+        background-color: rgba(255, 255, 0, 0.5); /* Amarelo com 50% de opacidade */
+    }
+    100% {
+        background-color: rgba(255, 0, 255, 0.5); /* Magenta com 50% de opacidade */
+    }
 }
 
 .game-title {
@@ -65,8 +84,6 @@ body {
     flex-direction: row;
     gap: 10px;
     padding: 10px;
-    /* background-color: #fff; */
-    /* border: 2px solid #ccc; */
     border-radius: 8px;
     flex-wrap: wrap;
     justify-content: center;
@@ -85,8 +102,6 @@ body {
 .drop-area {
     flex: 1;
     margin-top: 20px;
-    /* background-color: #fff; */
-    /* border: 2px dashed #ccc; */
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -95,7 +110,8 @@ body {
     padding: 20px;
     width: 100%;
 }
-.word-area{
+
+.word-area {
     display: none;
 }
 
@@ -109,7 +125,7 @@ body {
     align-items: center;
     position: relative;
     border-radius: 4px;
-    background-color: rgb(255,255,255,0.6);
+    background-color: rgb(255, 255, 255, 0.6);
     transition: border-color 0.3s ease, transform 0.2s ease; /* Animação suave */
 }
 
@@ -158,12 +174,8 @@ body {
 
 .game-over {
     position: fixed;
-    /* top: 50%; */
-    /* left: 50%; */
-    /* transform: translate(-50%, -50%); */
     background-color: rgb(0 0 0 / 57%);
     padding: 10%;
-    /* border-radius: 10px; */
     text-align: center;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     z-index: 2000;
@@ -185,12 +197,10 @@ p#final-score {
 }
 
 #restart-btn {
-    /* margin-top: 15%; */
     padding: 2% 2%;
     font-size: 1em;
     cursor: pointer;
     border-radius: 10px;
-    /* background-color: rgb(255,255,255,0.5); */
 }
 
 @keyframes correctPulse {
