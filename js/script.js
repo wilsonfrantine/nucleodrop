@@ -20,7 +20,7 @@ window.onload = function() {
     const gameOverElement = document.getElementById('game-over');
     const finalScoreElement = document.getElementById('final-score');
     const restartBtn = document.getElementById('restart-btn');
-    let draggedElement = null;  // Elemento sendo arrastado (para eventos de toque)
+    let clonedElement = null;  // Elemento clonado sendo arrastado (para eventos de toque)
 
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -51,7 +51,6 @@ window.onload = function() {
                 slot.addEventListener('dragover', event => event.preventDefault());
                 slot.addEventListener('drop', handleDrop);
                 slot.addEventListener('touchmove', event => event.preventDefault());  // Prevenir comportamento padrão de scroll
-                slot.addEventListener('touchend', handleTouchDrop);  // Evento de toque para drop
 
                 // Exibir a letra correspondente em cinza claro
                 const letterHint = document.createElement('span');
@@ -81,9 +80,9 @@ window.onload = function() {
         element.addEventListener('dragstart', handleDragStart);
 
         // Eventos de toque para dispositivos móveis
-        element.addEventListener('touchstart', handleTouchStart);
-        element.addEventListener('touchmove', handleTouchMove);
-        element.addEventListener('touchend', handleTouchEnd);
+        element.addEventListener('touchstart', handleTouchStart, { passive: false });
+        element.addEventListener('touchmove', handleTouchMove, { passive: false });
+        element.addEventListener('touchend', handleTouchEnd, { passive: false });
     }
 
     // Manipuladores de eventos de arrastar e soltar
@@ -94,36 +93,55 @@ window.onload = function() {
 
     // Manipuladores de eventos de toque
     function handleTouchStart(event) {
-        draggedElement = event.target;  // Armazenar o elemento arrastado
-        event.target.style.cursor = 'grabbing';
+        event.preventDefault();
+        const originalElement = event.target;  // Armazenar o elemento original
+        clonedElement = originalElement.cloneNode(true);  // Criar um clone do elemento
+        clonedElement.id = originalElement.id;  // Copiar o ID do elemento original
+        clonedElement.style.position = 'absolute';
+        clonedElement.style.zIndex = '1000';
+        document.body.appendChild(clonedElement);  // Adicionar o clone ao corpo para manipulação
+    
+        clonedElement.style.left = originalElement.getBoundingClientRect().left + 'px';
+        clonedElement.style.top = originalElement.getBoundingClientRect().top + 'px';
     }
+    
 
     function handleTouchMove(event) {
-        if (!draggedElement) return;  // Se nenhum elemento está sendo arrastado, sair
+        if (!clonedElement) return;  // Se nenhum elemento está sendo arrastado, sair
 
         const touch = event.touches[0];
-        draggedElement.style.position = 'absolute';
-        draggedElement.style.left = touch.pageX - (draggedElement.offsetWidth / 2) + 'px';
-        draggedElement.style.top = touch.pageY - (draggedElement.offsetHeight / 2) + 'px';
+        clonedElement.style.left = touch.pageX - (clonedElement.offsetWidth / 2) + 'px';
+        clonedElement.style.top = touch.pageY - (clonedElement.offsetHeight / 2) + 'px';
     }
 
     function handleTouchEnd(event) {
         const touch = event.changedTouches[0];
         const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);  // Detectar o elemento sob o toque
-
+    
         if (dropTarget && dropTarget.classList.contains('slot')) {
-            handleDrop({ target: dropTarget, dataTransfer: { getData: () => draggedElement.id } });
+            // Cria um objeto de evento simulado
+            const simulatedEvent = {
+                target: dropTarget,
+                dataTransfer: {
+                    getData: () => clonedElement.id  // Use o ID do clone
+                },
+                preventDefault: function() {}  // Simulação do método preventDefault
+            };
+    
+            handleDrop(simulatedEvent);  // Chama handleDrop com o evento simulado
         }
-
-        // Resetar o estilo de posição do elemento arrastado
-        if (draggedElement) {
-            draggedElement.style.position = 'static';
-            draggedElement = null;
+    
+        // Remover o clone
+        if (clonedElement) {
+            clonedElement.remove();
+            clonedElement = null;
         }
     }
+    
 
     function handleDrop(event) {
-        event.preventDefault();
+        event.preventDefault();  // Garantir que o comportamento padrão seja prevenido
+
         const nucleotide = event.dataTransfer.getData("text");
         const expectedNucleotide = nucleotideMapping[event.target.dataset.expected];
 
@@ -133,7 +151,6 @@ window.onload = function() {
             img.classList.add('nucleotide');
             event.target.appendChild(img);
             event.target.removeEventListener('drop', handleDrop);
-            event.target.removeEventListener('touchend', handleTouchDrop);  // Remover o manipulador de toque
             event.target.classList.add('correct');
 
             // Tocar o som de sucesso
@@ -152,10 +169,6 @@ window.onload = function() {
             loseLife();  // Perder uma vida
             showFeedback('Errou! -1 Vida', 'red', errorSound);
         }
-    }
-
-    function handleTouchDrop(event) {
-        handleDrop(event);
     }
 
     // Função para reproduzir áudio
