@@ -1,7 +1,7 @@
 // script.js
 
 window.onload = function() {
-    const words = ["GATA", "CACA", "TATA", "TACA", "ATACA", "TACATACA","GATA", "TACACACA"];
+    const words = ["GATA", "CACA", "TATA", "TACA", "ATACA", "TACA GATO", "TACA CACA"];
     const nucleotideMapping = {
         A: 'adenine',
         T: 'thymine',
@@ -20,6 +20,7 @@ window.onload = function() {
     const gameOverElement = document.getElementById('game-over');
     const finalScoreElement = document.getElementById('final-score');
     const restartBtn = document.getElementById('restart-btn');
+    let draggedElement = null;  // Elemento sendo arrastado (para eventos de toque)
 
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -49,6 +50,8 @@ window.onload = function() {
                 slot.dataset.expected = letter; // Define a letra esperada
                 slot.addEventListener('dragover', event => event.preventDefault());
                 slot.addEventListener('drop', handleDrop);
+                slot.addEventListener('touchmove', event => event.preventDefault());  // Prevenir comportamento padrão de scroll
+                slot.addEventListener('touchend', handleTouchDrop);  // Evento de toque para drop
 
                 // Exibir a letra correspondente em cinza claro
                 const letterHint = document.createElement('span');
@@ -66,13 +69,57 @@ window.onload = function() {
         shuffleArray(nucleotideElements);
         const nucleotidesColumn = document.querySelector('.nucleotides-column');
         nucleotidesColumn.innerHTML = '';  // Limpa a coluna antes de adicionar os elementos embaralhados
-        nucleotideElements.forEach(nucleotide => nucleotidesColumn.appendChild(nucleotide));
+        nucleotideElements.forEach(nucleotide => {
+            nucleotidesColumn.appendChild(nucleotide);
+            addDragAndTouchListeners(nucleotide);  // Adicionar eventos de drag e touch
+        });
+    }
+
+    // Adicionar eventos de arrastar e toque
+    function addDragAndTouchListeners(element) {
+        // Eventos de mouse para desktop
+        element.addEventListener('dragstart', handleDragStart);
+
+        // Eventos de toque para dispositivos móveis
+        element.addEventListener('touchstart', handleTouchStart);
+        element.addEventListener('touchmove', handleTouchMove);
+        element.addEventListener('touchend', handleTouchEnd);
     }
 
     // Manipuladores de eventos de arrastar e soltar
     function handleDragStart(event) {
         event.dataTransfer.setData("text", event.target.id);
         event.target.style.cursor = 'grabbing';  // Cursor estilo drag-drop
+    }
+
+    // Manipuladores de eventos de toque
+    function handleTouchStart(event) {
+        draggedElement = event.target;  // Armazenar o elemento arrastado
+        event.target.style.cursor = 'grabbing';
+    }
+
+    function handleTouchMove(event) {
+        if (!draggedElement) return;  // Se nenhum elemento está sendo arrastado, sair
+
+        const touch = event.touches[0];
+        draggedElement.style.position = 'absolute';
+        draggedElement.style.left = touch.pageX - (draggedElement.offsetWidth / 2) + 'px';
+        draggedElement.style.top = touch.pageY - (draggedElement.offsetHeight / 2) + 'px';
+    }
+
+    function handleTouchEnd(event) {
+        const touch = event.changedTouches[0];
+        const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);  // Detectar o elemento sob o toque
+
+        if (dropTarget && dropTarget.classList.contains('slot')) {
+            handleDrop({ target: dropTarget, dataTransfer: { getData: () => draggedElement.id } });
+        }
+
+        // Resetar o estilo de posição do elemento arrastado
+        if (draggedElement) {
+            draggedElement.style.position = 'static';
+            draggedElement = null;
+        }
     }
 
     function handleDrop(event) {
@@ -86,6 +133,7 @@ window.onload = function() {
             img.classList.add('nucleotide');
             event.target.appendChild(img);
             event.target.removeEventListener('drop', handleDrop);
+            event.target.removeEventListener('touchend', handleTouchDrop);  // Remover o manipulador de toque
             event.target.classList.add('correct');
 
             // Tocar o som de sucesso
@@ -104,6 +152,10 @@ window.onload = function() {
             loseLife();  // Perder uma vida
             showFeedback('Errou! -1 Vida', 'red', errorSound);
         }
+    }
+
+    function handleTouchDrop(event) {
+        handleDrop(event);
     }
 
     // Função para reproduzir áudio
@@ -178,7 +230,7 @@ window.onload = function() {
 
     // Configurar os eventos de drag e drop
     document.querySelectorAll('.nucleotide').forEach(nucleotide => {
-        nucleotide.addEventListener('dragstart', handleDragStart);
+        addDragAndTouchListeners(nucleotide);  // Adicionar eventos de drag e toque
     });
 
     // Evento de reinício
