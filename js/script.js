@@ -1,5 +1,3 @@
-// script.js
-
 window.onload = function () {
     const words = ["GATA", "CACA", "TATA", "TACA", "ATACA", "TACAGATG", "TACATACA"];
     const nucleotideMapping = {
@@ -8,14 +6,14 @@ window.onload = function () {
         C: 'cytosine',
         G: 'guanine'
     };
-    
+
     let currentTargetWord = '';
     let score = 0;
-    let lives = 3;  
-    let draggedElement = null;  // Elemento arrastado ou clonado
-    let draggedElementId = '';  // ID do elemento arrastado para verificar colisão
+    let lives = 3;
+    let draggedElement = null;
+    let draggedElementId = '';
 
-    // Elementos do DOM (cache para evitar consultas repetidas)
+    // Elementos do DOM
     const feedbackElement = document.getElementById('feedback');
     const successSound = document.getElementById('success-sound');
     const errorSound = document.getElementById('error-sound');
@@ -37,19 +35,23 @@ window.onload = function () {
 
     function loadNewWord() {
         currentTargetWord = words[Math.floor(Math.random() * words.length)];
-        dropArea.innerHTML = '';  // Limpar slots de drop
-        targetWordElement.textContent = currentTargetWord;  // Exibir a palavra
+        dropArea.innerHTML = '';  
+        targetWordElement.textContent = currentTargetWord;  
 
         createDropSlots(currentTargetWord);
         setupNucleotideElements();
     }
 
     function createDropSlots(word) {
+        dropArea.innerHTML = '';  // Limpar slots de drop
+    
         word.split('').forEach((letter, i) => {
-            if (letter !== ' ') {  // Ignora espaços ao criar os slots
+            if (letter !== ' ') {
+                // Criar contêiner do slot
                 const slotContainer = document.createElement('div');
                 slotContainer.classList.add('slot-container');
-
+    
+                // Criar slot
                 const slot = document.createElement('div');
                 slot.classList.add('slot');
                 slot.dataset.index = i;
@@ -57,17 +59,22 @@ window.onload = function () {
                 slot.addEventListener('dragover', event => event.preventDefault());
                 slot.addEventListener('drop', handleDrop);
                 slot.addEventListener('touchmove', event => event.preventDefault());
-
-                const letterHint = document.createElement('span');
+    
+                // Criar a letra abaixo do slot
+                const letterHint = document.createElement('div');
                 letterHint.classList.add('letter-hint');
-                letterHint.textContent = letter;
-                slot.appendChild(letterHint);
-
+                letterHint.textContent = letter; // Exibir a letra da palavra-alvo
+    
+                // Adicionar slot e letra ao contêiner
                 slotContainer.appendChild(slot);
+                slotContainer.appendChild(letterHint);
+    
+                // Adicionar contêiner à área de drop
                 dropArea.appendChild(slotContainer);
             }
         });
     }
+    
 
     function setupNucleotideElements() {
         const nucleotideElements = Array.from(document.querySelectorAll('.nucleotide'));
@@ -80,25 +87,25 @@ window.onload = function () {
     }
 
     function addDragAndTouchListeners(element) {
-        element.addEventListener('dragstart', handleDragStart);  // Desktop
-        element.addEventListener('touchstart', handleTouchStart, { passive: false });  // Mobile
-        element.addEventListener('touchmove', handleTouchMove, { passive: false });  // Mobile
-        element.addEventListener('touchend', handleTouchEnd, { passive: false });  // Mobile
+        element.addEventListener('dragstart', handleDragStart);  
+        element.addEventListener('touchstart', handleTouchStart, { passive: false });
+        element.addEventListener('touchmove', handleTouchMove, { passive: false });
+        element.addEventListener('touchend', handleTouchEnd, { passive: false });
     }
 
     function handleDragStart(event) {
-        event.dataTransfer.setData("text", event.target.id);  // Usar id do elemento
+        event.dataTransfer.setData("text", event.target.id);  
         event.target.style.cursor = 'grabbing';
     }
 
     function handleTouchStart(event) {
         event.preventDefault();
-        draggedElement = event.target.cloneNode(true);  // Criar um clone do elemento
-        draggedElementId = event.target.id;  // Armazena o id do elemento original
+        draggedElement = event.target.cloneNode(true);  
+        draggedElementId = event.target.id;  
         draggedElement.style.position = 'absolute';
         draggedElement.style.zIndex = '1000';
         document.body.appendChild(draggedElement);
-    
+
         const rect = event.target.getBoundingClientRect();
         draggedElement.style.left = rect.left + 'px';
         draggedElement.style.top = rect.top + 'px';
@@ -110,6 +117,11 @@ window.onload = function () {
         const touch = event.touches[0];
         draggedElement.style.left = touch.pageX - (draggedElement.offsetWidth / 2) + 'px';
         draggedElement.style.top = touch.pageY - (draggedElement.offsetHeight / 2) + 'px';
+    
+        // Centralizar na tela
+        if (touch.pageX < 0 || touch.pageY < 0 || touch.pageX > window.innerWidth || touch.pageY > window.innerHeight) {
+            document.querySelector('.container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     }
 
     function handleTouchEnd(event) {
@@ -124,15 +136,15 @@ window.onload = function () {
                 const expectedNucleotide = slot.dataset.expected;
 
                 if (draggedElementId === expectedNucleotide) {  
-                    handleDropResult(slot, true);  // Sucesso
+                    handleDropResult(slot, true);  
                 } else {
-                    handleDropResult(slot, false);  // Falha
+                    handleDropResult(slot, false);  
                 }
             }
         });
 
         if (!collisionFound) {
-            cleanupDraggedElement();  // Remove o elemento arrastado sem computar falha
+            cleanupDraggedElement();  
             return;
         }
 
@@ -159,13 +171,19 @@ window.onload = function () {
 
     function handleDrop(event) {
         event.preventDefault();
-
+    
         const nucleotide = event.dataTransfer.getData("text");
         const expectedNucleotide = event.target.dataset.expected;
-
+    
+        // Verificar se o slot já possui uma imagem atribuída
+        if (event.target.querySelector('img')) {
+            // Se já houver uma imagem, interrompe a função
+            return;
+        }
+    
         handleDropResult(event.target, nucleotide === expectedNucleotide);
     }
-
+    
     function handleDropResult(target, success) {
         if (success) {
             dropSuccess(target);
@@ -180,12 +198,14 @@ window.onload = function () {
         img.classList.add('nucleotide');
         dropTarget.appendChild(img);
         dropTarget.classList.add('correct');
-
+        
+        updateScore(10); // Chamar função de atualização de pontuação
+    
         // Adiciona classe de brilho e remove após a animação
         dropTarget.classList.add('correct-glow');
         setTimeout(() => dropTarget.classList.remove('correct-glow'), 500);
         playAudio(correctBaseSound);
-
+    
         checkCompletion();
     }
 
@@ -209,19 +229,25 @@ window.onload = function () {
 
     function loseLife() {
         if (lives > 0) {
-            document.getElementById(`life-${lives}`).style.opacity = '0.2';
+            const lifeElement = document.getElementById(`life-${lives}`);
+            lifeElement.classList.add('lost'); // Adiciona a classe 'lost' para a animação de pulso
+            setTimeout(() => {
+                lifeElement.style.opacity = '0.2'; // Define a opacidade final após a animação
+                lifeElement.classList.remove('lost'); // Remove a classe de animação
+            }, 2100); // 2100ms para permitir que a animação aconteça 3 vezes
             lives--;
         }
         if (lives === 0) endGame();
     }
+    
 
     function checkCompletion() {
         const allSlots = document.querySelectorAll('.slot');
-        const allCompleted = Array.from(allSlots).every(slot => slot.querySelector('img') !== null); // Verifica se todos os slots têm uma imagem
+        const allCompleted = Array.from(allSlots).every(slot => slot.querySelector('img') !== null); 
 
         if (allCompleted) {
-            playFeedback('Palavra Completa!', 'green', successSound);
-            setTimeout(loadNewWord, 1000);
+            playFeedback('Cópia perfeita! Avançando na fita...', 'green', successSound);
+            setTimeout(loadNewWord, 2000);
         }
     }
 
