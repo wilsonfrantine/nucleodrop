@@ -90,8 +90,8 @@ body {
 }
 
 .nucleotide {
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 100px;
     cursor: grab;  /* Cursor estilo drag-drop */
     border: 1px solid #ccc;
     padding: 5px;
@@ -109,6 +109,7 @@ body {
     border-radius: 8px;
     padding: 20px;
     width: 100%;
+    min-height: 100px;
 }
 
 .word-area {
@@ -116,17 +117,24 @@ body {
 }
 
 .slot {
-    width: 60px;
-    height: 60px;
-    margin: 5px;
+    width: 100px;  
+    height: 100px; 
+    margin: 10px; 
     border: 2px dashed #999;
     display: inline-flex;
     justify-content: center;
     align-items: center;
     position: relative;
-    border-radius: 4px;
-    background-color: rgb(255, 255, 255, 0.6);
-    transition: border-color 0.3s ease, transform 0.2s ease; /* Animação suave */
+    border-radius: 6px;  /* Torna o slot um pouco mais arredondado */
+    background-color: rgba(255, 255, 255, 0.8);
+    transition: border-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    padding-bottom: 20%;
+    padding-right: 1em;
+}
+.slot .nucleotide {
+    background-color: rgba(0, 0, 0, 0);
+    border:none
 }
 
 .slot.correct {
@@ -146,10 +154,19 @@ body {
 }
 
 .letter-hint {
-    font-size: 1.2em;
+    font-size: 2em;
     font-weight: bold;
     color: #000000;  /* Cinza claro para impressão de transparência */
     pointer-events: none;  /* Para não interferir com o drag-drop */
+}
+
+.slot.correct .letter-hint {
+    position: relative;
+    top: 60%;
+    left: 50%;
+    font-size: 1.5em;
+    opacity: 0.8;
+    color: #000000;
 }
 
 .feedback {
@@ -212,6 +229,22 @@ p#final-score {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
+}
+
+@keyframes correctGlow {
+    0% {
+        box-shadow: 0 0 0 rgba(0, 255, 0, 0.8);
+    }
+    50% {
+        box-shadow: 0 0 10px rgba(0, 255, 0, 1);
+    }
+    100% {
+        box-shadow: 0 0 0 rgba(0, 255, 0, 0.8);
+    }
+}
+
+.slot.correct-glow {
+    animation: correctGlow 0.5s ease-out;
 }
 
 @media (max-width: 600px) {
